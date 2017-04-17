@@ -55,7 +55,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-            String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+//            all permissions
+            String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
             requestPermissions(permissions, RC_EXTERNAL);
         }else{
             bindToPlayer();

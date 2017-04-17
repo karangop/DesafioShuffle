@@ -1,8 +1,10 @@
 package com.karangop.desafioshuffle;
 
 import android.app.Service;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
@@ -11,6 +13,7 @@ import android.util.Log;
 
 import com.karangop.desafioshuffle.models.Song;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +21,7 @@ public class PlayerService extends Service {
 
     private final IBinder binder = new LocalBinder();
     private List<Song> songs = new ArrayList<>();
+    private MediaPlayer mediaPlayer = new MediaPlayer();
 
     public PlayerService() {
     }
@@ -54,10 +58,40 @@ public class PlayerService extends Service {
 
     public void playSongs(){
         Log.d("PLAYERSERVICE","PLAY THE SONG");
+
+        if (songs.size() > 0){
+            Uri songUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, songs.get(0).getId());
+
+            try {
+                mediaPlayer.reset();
+                mediaPlayer.setDataSource(this, songUri);
+                mediaPlayer.prepareAsync();
+                mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mp) {
+                        mp.start();
+                    }
+                });
+
+                /*mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        playSongs();
+                    }
+                });*/
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
     }
 
     public void stopSongs(){
         Log.d("PLAYERSERVICE","STOPING THE SONG");
+        if (mediaPlayer.isPlaying()){
+            mediaPlayer.stop();
+        }
     }
 
     public String getSongName(){
